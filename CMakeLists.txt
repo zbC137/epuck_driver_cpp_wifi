@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(epuck_driver_cpp_wifi)
 
 ## Find catkin macros and libraries
@@ -6,7 +6,9 @@ project(epuck_driver_cpp_wifi)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
   std_msgs
+  geometry_msgs
   tf
   cv_bridge
 )
@@ -129,6 +131,10 @@ target_link_libraries(epuck_driver_cpp_wifi bluetooth ${catkin_LIBRARIES} ${Open
 #   scripts/my_python_script
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
+catkin_install_python(PROGRAMS
+   scripts/detect.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables and/or libraries for installation
 # install(TARGETS epuck_driver_cpp epuck_driver_cpp_node
