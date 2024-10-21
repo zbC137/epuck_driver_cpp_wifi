@@ -19,10 +19,10 @@ if __name__ == '__main__':
     pose_pub = rospy.Publisher('robot_pose', Float64MultiArray, queue_size=10)
     rate = rospy.Rate(100)
     videoRgb = cv2.VideoCapture('/dev/video0')
-    #videoRgb.set(cv2.CAP_PROP_BRIGHTNESS, 0.2)
-    #videoRgb.set(cv2.CAP_PROP_CONTRAST, 0.2)
+    #videoRgb.set(cv2.CAP_PROP_BRIGHTNESS, 0.9)
+    #videoRgb.set(cv2.CAP_PROP_CONTRAST, 0.5)
     #videoRgb.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-    #videoRgb.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.75)
+    #videoRgb.set(cv2.CAP_PROP_AUTO_EXPOSURE, 1)
     videoRgb.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     videoRgb.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     videoRgb.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
@@ -58,9 +58,9 @@ if __name__ == '__main__':
         corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, arucoDict, parameters=parameters)
         frameMarkers = aruco.drawDetectedMarkers(frameUndistorted, corners, ids)
         
+        a = [0] * len(ids) * 4
         if ids is not None:
             print("length of ids: ", len(ids))
-            a = [0] * len(ids) * 4
             rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, 0.036, cameraMatrix, distCoeffs)
             for i in range(len(ids)):
                 rvec, tvec = rvecs[i], tvecs[i]
