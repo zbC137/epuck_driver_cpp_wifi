@@ -1,25 +1,21 @@
 #!/usr/bin/env python3
 import time
 import rospy
-import math
 import ctrlFunc as cf
-import numpy.matlib
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
 
-from multiprocessing import Process
 from robot import Robot
 from std_msgs.msg import Float64MultiArray
 
-agentDict = {'6': 1, '7': 2, '8': 3, '9': 4, '10': 5, '5': 6, '4': 7, '12': 8, '11': 9}
-agentNum = len(agentDict)
+agentNum = 9
 harmNum = 6
 ctrlK = [1e-3, 3e-3]
 k = 2
 dist = -0.01
 
-f = 5
+f = 10
 
 wheel_base = 80e-3  # m
 wheel_diameter = 31e-3  # m
@@ -42,7 +38,7 @@ def saturated(input, bound):
 if __name__ == '__main__':
     try:
         rospy.init_node('fouriCtrl', anonymous=True)
-        pub = rospy.Publisher('anglevelocity', Float64MultiArray, queue_size=10)
+        pub = rospy.Publisher('cmd_vel', Float64MultiArray, queue_size=10)
         vel = [0] * (2 * agentNum + 1)
         ce = [0] * (4 * harmNum + 2)
         pe = [0] * (2 * agentNum)
@@ -50,7 +46,7 @@ if __name__ == '__main__':
         xi_m = [0]*(4 * harmNum + 2)
         rate = rospy.Rate(f)
 
-        bot_state = Robot(agentNum, agentDict)
+        bot_state = Robot(agentNum)
         l = cf.generateL(k, agentNum)
         gc = cf.generateGs(0, 1 / agentNum, 1, 0, 0, harmNum)
         start_time = time.time()

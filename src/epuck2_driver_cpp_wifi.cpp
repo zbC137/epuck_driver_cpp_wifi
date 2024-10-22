@@ -49,6 +49,7 @@
 #define WHEEL_CIRCUMFERENCE ((WHEEL_DIAMETER*M_PI)/100.0)    // Wheel circumference (meters).
 #define MOT_STEP_DIST (WHEEL_CIRCUMFERENCE/1000.0)      // Distance for each motor step (meters); a complete turn is 1000 steps (0.000125 meters per step (m/steps)).
 #define ROBOT_RADIUS 0.035 // meters.
+#define MAX_WHEEL_SPEED 1.5 // rad/s.
 
 #define LED_NUMBER 6 // total number of LEDs on the robot (0,2,4,6=leds, 8=body, 9=front) 
 #define RGB_LED_NUMBER 4
@@ -1117,6 +1118,16 @@ void updateRosInfo() {
 	
 }
 
+double saturated(double vel, double max) {
+	if (vel > max) {
+		return max;
+	} else if (vel < -max) {
+		return -max;
+	} else {
+		return vel;
+	}
+}
+
 void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
     // Controls the velocity of each wheel based on linear and angular velocities.
     double linear = msg->linear.x;    // Divide by 3 to adapt the values received from the rviz "teleop" module that are too high.
@@ -1125,6 +1136,9 @@ void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
     // Kinematic model for differential robot.
     double wl = (linear - (WHEEL_SEPARATION / 2.0) * angular) / WHEEL_DIAMETER;
     double wr = (linear + (WHEEL_SEPARATION / 2.0) * angular) / WHEEL_DIAMETER;
+
+	wl = saturated(wl, MAX_WHEEL_SPEED);
+	wr = saturated(wr, MAX_WHEEL_SPEED);
 
     // At input 1000, angular velocity is 1 cycle / s or  2*pi/s.
     speedLeft = int(wl * 1000.0);
@@ -1146,6 +1160,9 @@ void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr& msg) {
     // Kinematic model for differential robot.
 	double wl = (u1 - u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER;
 	double wr = (u1 + u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER;
+
+	wl = saturated(wl, MAX_WHEEL_SPEED);
+	wr = saturated(wr, MAX_WHEEL_SPEED);
 
     // At input 1000, angular velocity is 1 cycle / s or  2*pi/s.
     speedLeft = int(wl * 1000.0);
