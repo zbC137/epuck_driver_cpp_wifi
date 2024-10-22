@@ -17,6 +17,7 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/UInt8MultiArray.h>
+#include <std_msgs/Float64MultiArray.h>
 #include <tf/transform_broadcaster.h>
 #include <visualization_msgs/Marker.h>
 #include <cv_bridge/cv_bridge.h>
@@ -135,6 +136,7 @@ int speedLeft = 0, speedRight = 0;
 
 
 // General variables
+int robotId = 0;
 std::string epuckname;
 
 
@@ -1117,12 +1119,33 @@ void updateRosInfo() {
 
 void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
     // Controls the velocity of each wheel based on linear and angular velocities.
-    double linear = msg->linear.x/3;    // Divide by 3 to adapt the values received from the rviz "teleop" module that are too high.
-    double angular = msg->angular.z/3;
+    double linear = msg->linear.x;    // Divide by 3 to adapt the values received from the rviz "teleop" module that are too high.
+    double angular = msg->angular.z;
 
     // Kinematic model for differential robot.
     double wl = (linear - (WHEEL_SEPARATION / 2.0) * angular) / WHEEL_DIAMETER;
     double wr = (linear + (WHEEL_SEPARATION / 2.0) * angular) / WHEEL_DIAMETER;
+
+    // At input 1000, angular velocity is 1 cycle / s or  2*pi/s.
+    speedLeft = int(wl * 1000.0);
+    speedRight = int(wr * 1000.0);
+	
+	command[3] = speedLeft & 0xFF;		// left motor LSB
+	command[4] = speedLeft >> 8;		// left motor MSB
+	command[5] = speedRight & 0xFF;		// right motor LSB
+	command[6] = speedRight >> 8;		// right motor MSB	
+
+    if(DEBUG_SPEED_RECEIVED)std::cout << "[" << epuckname << "] " << "new speed: " << speedLeft << ", " << speedRight << std::endl;
+    
+}
+
+void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr& msg) {
+    double u1 = msg->data[2*robotId-2];
+	double u2 = msg->data[2*robotId-1];
+
+    // Kinematic model for differential robot.
+	double wl = (u1 - u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER;
+	double wr = (u1 + u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER;
 
     // At input 1000, angular velocity is 1 cycle / s or  2*pi/s.
     speedLeft = int(wl * 1000.0);
@@ -1176,8 +1199,7 @@ void handlerRgbLeds(const std_msgs::UInt8MultiArray::ConstPtr& msg) {
     }
 }
 
-int main(int argc,char *argv[]) {
-	int robotId = 0;   
+int main(int argc,char *argv[]) {   
 	double init_xpos, init_ypos, init_theta;
 	int rosRate = 0;
 	unsigned int bufIndex = 0;
@@ -1337,7 +1359,9 @@ int main(int argc,char *argv[]) {
     * is the number of messages that will be buffered up before beginning to throw
     * away the oldest ones.
     */
-    cmdVelSubscriber = n.subscribe("mobile_base/cmd_vel", 10, handlerVelocity);
+    //cmdVelSubscriber = n.subscribe("mobile_base/cmd_vel", 10, handlerVelocity);
+	cmdVelSubscriber = n.subscribe("cmd_vel", 10, handlerVelocity);
+	//cmdVelSubscriber = n.subscribe("cmd_vel", 10, handlerVelocityMulti);
     cmdLedSubscriber = n.subscribe("mobile_base/cmd_led", 10, handlerLED);
 	cmdRgbLedsSubscriber = n.subscribe("mobile_base/rgb_leds", 10, handlerRgbLeds);
     

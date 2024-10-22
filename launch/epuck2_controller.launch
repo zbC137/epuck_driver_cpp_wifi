@@ -1,7 +1,7 @@
 <launch>
 
     <arg name="epuck2_id" default="0"/>
-    <arg name="epuck2_address" default="192.168.1.1"/>
+    <arg name="epuck2_address" default="192.168.0.148"/>
     <arg name="epuck2_name" default="epuck2_robot_0"/>
     <arg name="is_single_robot" default="1" />
     <arg name="xpos" default="0.0"/>
