@@ -133,6 +133,8 @@ target_link_libraries(epuck_driver_cpp_wifi bluetooth ${catkin_LIBRARIES} ${Open
 # )
 catkin_install_python(PROGRAMS
    scripts/detect.py
+   scripts/control_pid.py
+   scripts/contour_ros.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

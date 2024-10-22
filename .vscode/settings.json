@@ -1,0 +1,18 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/binzhang/e-puck2/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/PhD/ROS_Study/project2/2nd-assignment/devel/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/PhD/ROS_Study/turtlebot3_waffle/devel/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/PhD/ROS_Study/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/codingsomethingcool/epuck_ws/devel/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/binzhang/e-puck2/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/PhD/ROS_Study/project2/2nd-assignment/devel/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/PhD/ROS_Study/turtlebot3_waffle/devel/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/PhD/ROS_Study/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages",
+        "/home/binzhang/zbin13/codingsomethingcool/epuck_ws/devel/lib/python3/dist-packages"
+    ]
+}
