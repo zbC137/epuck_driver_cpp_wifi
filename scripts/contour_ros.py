@@ -14,14 +14,7 @@ harmNum = 6
 ctrlK = [1e-3, 3e-3]
 k = 2
 dist = -0.01
-
 f = 10
-
-wheel_base = 80e-3  # m
-wheel_diameter = 31e-3  # m
-
-linear_sat = 0.02
-angular_sat = 0.1
 
 MAX_SPEED = 1.5
 
@@ -53,14 +46,11 @@ if __name__ == '__main__':
 
         while not rospy.is_shutdown():
             t = time.time() - start_time
-            u, coffErr, posErr, xi = cf.controller(t, bot_state.x, l, ctrlK, dist, gc, f, agentNum, harmNum)
+            u, coffErr, posErr, xi = cf.controller(t, bot_state.botPose, l, ctrlK, dist, gc, f, agentNum, harmNum)
 
             for i in range(agentNum):
-                left = (u[2 * i, 0] - u[2 * i + 1, 0] * wheel_base / 2) * 2 / wheel_diameter
-                right = (u[2 * i, 0] + u[2 * i + 1, 0] * wheel_base / 2) * 2 / wheel_diameter
-
-                vel[2 * i] = saturated(left, MAX_SPEED)
-                vel[2 * i + 1] = saturated(right, MAX_SPEED)
+                vel[2 * i] = u[2 * i, 0]
+                vel[2 * i + 1] = u[2 * i + 1, 0]
 
                 pe[2 * i] = posErr[2 * i, 0]
                 pe[2 * i + 1] = posErr[2 * i + 1, 0]
