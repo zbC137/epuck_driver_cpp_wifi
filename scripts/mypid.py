@@ -3,7 +3,6 @@
 import rospy
 import numpy.matlib
 import numpy as np
-from robot_msg.msg import robot_pose_array
 
 
 class PID:

@@ -14,8 +14,8 @@ class Robot:
         self.sub = rospy.Subscriber('robot_pose', Float64MultiArray, self.state_callback, queue_size=10)
 
     def state_callback(self, msg):
-        n = len(msg.data)/4
+        n = int(len(msg.data)/4)
         for i in range(n):
-            self.botId = msg.data[4*i + 3]
+            self.botId = int(msg.data[4*i + 3])
             id = self.botId - 1
             self.botPose[3*id:3*id+3] = np.array([msg.data[4*i], msg.data[4*i + 1], msg.data[4*i + 2]]).reshape((3, 1))

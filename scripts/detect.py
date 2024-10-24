@@ -46,13 +46,13 @@ if __name__ == '__main__':
         if not ret:
             break
         frameUndistorted = cv2.undistort(frame, cameraMatrix, distCoeffs, None, newCameraMatrix)
-        cv2.imshow('frame', frameUndistorted)
+        cv2.imshow('frame', frame)
         cv2.waitKey(1)
-        frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+        #frame = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         
         corners, ids, rejectedImgPoints = aruco.detectMarkers(gray, arucoDict, parameters=parameters)
-        frameMarkers = aruco.drawDetectedMarkers(frameUndistorted, corners, ids)
+        frameMarkers = aruco.drawDetectedMarkers(frame, corners, ids)
         
         a = [0] * len(ids) * 4
         if ids is not None:
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 quaternion = tft.quaternion_from_matrix(np.vstack((np.hstack((rotationMatrix, [[0], [0], [0]])), [0, 0, 0, 1])))
                 euler = tft.euler_from_quaternion(quaternion)
                 roll, pitch, yaw = euler[0], euler[1], euler[2]
-                cv2.drawFrameAxes(frameUndistorted, cameraMatrix, distCoeffs, rvec, tvec, 0.1)
+                cv2.drawFrameAxes(frame, cameraMatrix, distCoeffs, rvec, tvec, 0.1)
                 cv2.imshow('frameMarkers', frameMarkers)
                 
                 pose = Pose()
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                 
                 a[i*4] = tvec[0]
                 a[i*4+1] = tvec[1]
-                a[i*4+2] = tvec[2]
+                a[i*4+2] = yaw
                 a[i*4+3] = ids[i][0]
 
         data = Float64MultiArray(data=a)

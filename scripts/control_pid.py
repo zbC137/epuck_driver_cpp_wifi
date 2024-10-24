@@ -12,14 +12,8 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64MultiArray
 
 agentNum = 1
-harmNum = 6
-ctrlK = 2
-k = 2
 
 f = 10
-
-wheel_base = 80e-3  # mm
-wheel_diameter = 31e-3  # mm
 
 if __name__ == '__main__':
     try:
@@ -34,8 +28,8 @@ if __name__ == '__main__':
         angPID = PID(0, 1 / f)
 
         # parameters
-        kp_l, ki_l, kd_l = 0.6, 0.0, 0.0
-        kp_a, ki_a, kd_a = 0.5, 0.0, 0.0
+        kp_l, ki_l, kd_l = 0.05, 0.0, 0.0
+        kp_a, ki_a, kd_a = 0.01, 0.0, 0.0
 
         target = [0.8, 0.35, math.pi / 4]
 
@@ -50,7 +44,8 @@ if __name__ == '__main__':
             yd = 0.25 * np.sin(angle)
 
             for i in range(agentNum):
-                pos = bot_state.x.flat
+                pos = bot_state.botPose.flat
+                print("pos: ", pos[0], ", ", pos[1], ", ", pos[2])
                 posError = math.sqrt((xd - pos[0]) ** 2 + (yd - pos[1]) ** 2)
                 angError = math.atan2((yd - pos[1]), (xd - pos[0])) - pos[2]
                 if angError > math.pi:
@@ -60,6 +55,8 @@ if __name__ == '__main__':
 
                 uLinear = linPID.ctrl_pid(posError, kp_l, ki_l, kd_l, 1 / f)
                 uAngular = -angPID.ctrl_pid(angError, kp_a, ki_a, kd_a, 1 / f)
+                
+                #uAngular = 0.1
 
                 #vel[2 * i] = (uLinear - uAngular * wheel_base / 2) * 2 / wheel_diameter
                 #vel[2 * i + 1] = (uLinear + uAngular * wheel_base / 2) * 2 / wheel_diameter
@@ -72,8 +69,8 @@ if __name__ == '__main__':
                 plt.pause(1 / 30)
                 plt.ioff()
 
-                vel.angular = uAngular
-                vel.linear = uLinear
+                vel.angular.z = uAngular
+                vel.linear.x = uLinear
                 #vel_msg = Float64MultiArray(data=vel)
                 rospy.loginfo(vel)
                 pub.publish(vel)

@@ -1130,7 +1130,7 @@ double saturated(double vel, double max) {
 
 void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
     // Controls the velocity of each wheel based on linear and angular velocities.
-    double linear = msg->linear.x;    // Divide by 3 to adapt the values received from the rviz "teleop" module that are too high.
+    double linear = msg->linear.x * 100;    // Divide by 3 to adapt the values received from the rviz "teleop" module that are too high.
     double angular = msg->angular.z;
 
     // Kinematic model for differential robot.
@@ -1139,6 +1139,7 @@ void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
 
 	wl = saturated(wl, MAX_WHEEL_SPEED);
 	wr = saturated(wr, MAX_WHEEL_SPEED);
+	std::cout << "wl: " << wl << "; wr: " << wr << std::endl;
 
     // At input 1000, angular velocity is 1 cycle / s or  2*pi/s.
     speedLeft = int(wl * 1000.0);
@@ -1154,7 +1155,7 @@ void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
 }
 
 void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr& msg) {
-    double u1 = msg->data[2*robotId-2];
+    double u1 = msg->data[2*robotId-2] * 100;
 	double u2 = msg->data[2*robotId-1];
 
     // Kinematic model for differential robot.
@@ -1218,7 +1219,7 @@ void handlerRgbLeds(const std_msgs::UInt8MultiArray::ConstPtr& msg) {
 
 int main(int argc,char *argv[]) {   
 	double init_xpos, init_ypos, init_theta;
-	int rosRate = 0;
+	int rosRate = 10;
 	unsigned int bufIndex = 0;
 	int i = 0;
    
@@ -1386,13 +1387,13 @@ int main(int argc,char *argv[]) {
     xPos = init_xpos;
     yPos = init_ypos;
 
-    //ros::Rate loop_rate(rosRate);
+    ros::Rate loop_rate(rosRate);
    
     while (ros::ok()) {
         updateSensorsAndActuators();
         updateRosInfo();
         ros::spinOnce();
-        //loop_rate.sleep();    // Do not call "sleep" otherwise the bluetooth communication will hang.
+        loop_rate.sleep();    // Do not call "sleep" otherwise the bluetooth communication will hang.
                                 // We communicate as fast as possible, this shouldn't be a problem...
     }
 
