@@ -19,7 +19,7 @@ if __name__ == '__main__':
     try:
         rospy.init_node('fouriCtrl', anonymous=True)
 
-        pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+        pub = rospy.Publisher('vel', Twist, queue_size=10)
         vel = Twist()
         rate = rospy.Rate(f)
 
@@ -28,8 +28,8 @@ if __name__ == '__main__':
         angPID = PID(0, 1 / f)
 
         # parameters
-        kp_l, ki_l, kd_l = 0.05, 0.0, 0.0
-        kp_a, ki_a, kd_a = 0.01, 0.0, 0.0
+        kp_l, ki_l, kd_l = 0.1, 0.0, 0.05
+        kp_a, ki_a, kd_a = 0.1, 0.0, 0.05
 
         target = [0.8, 0.35, math.pi / 4]
 
@@ -39,9 +39,9 @@ if __name__ == '__main__':
         while not rospy.is_shutdown():
             t = time.time() - start_time
 
-            angle = frame_count * 2 * math.pi / 1000
-            xd = 0.5 * np.cos(angle)
-            yd = 0.25 * np.sin(angle)
+            angle = frame_count * 2 * math.pi / 250
+            xd = 0.6 * np.cos(angle) + 1.2
+            yd = 0.35 * np.sin(angle) + 0.7
 
             for i in range(agentNum):
                 pos = bot_state.botPose.flat
@@ -55,7 +55,6 @@ if __name__ == '__main__':
 
                 uLinear = linPID.ctrl_pid(posError, kp_l, ki_l, kd_l, 1 / f)
                 uAngular = -angPID.ctrl_pid(angError, kp_a, ki_a, kd_a, 1 / f)
-                
                 #uAngular = 0.1
 
                 #vel[2 * i] = (uLinear - uAngular * wheel_base / 2) * 2 / wheel_diameter

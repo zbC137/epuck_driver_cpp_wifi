@@ -31,7 +31,7 @@ def saturated(input, bound):
 if __name__ == '__main__':
     try:
         rospy.init_node('fouriCtrl', anonymous=True)
-        pub = rospy.Publisher('cmd_vel', Float64MultiArray, queue_size=10)
+        pub = rospy.Publisher('vel', Float64MultiArray, queue_size=10)
         vel = [0] * (2 * agentNum + 1)
         ce = [0] * (4 * harmNum + 2)
         pe = [0] * (2 * agentNum)

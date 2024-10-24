@@ -1156,7 +1156,7 @@ void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
 
 void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr& msg) {
     double u1 = msg->data[2*robotId-2] * 100;
-	double u2 = msg->data[2*robotId-1];
+	double u2 = msg->data[2*robotId-1] * 100;
 
     // Kinematic model for differential robot.
 	double wl = (u1 - u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER;
@@ -1378,7 +1378,7 @@ int main(int argc,char *argv[]) {
     * away the oldest ones.
     */
     //cmdVelSubscriber = n.subscribe("mobile_base/cmd_vel", 10, handlerVelocity);
-	cmdVelSubscriber = n.subscribe("cmd_vel", 10, handlerVelocity);
+	cmdVelSubscriber = n.subscribe("vel", 10, handlerVelocity);
 	//cmdVelSubscriber = n.subscribe("cmd_vel", 10, handlerVelocityMulti);
     cmdLedSubscriber = n.subscribe("mobile_base/cmd_led", 10, handlerLED);
 	cmdRgbLedsSubscriber = n.subscribe("mobile_base/rgb_leds", 10, handlerRgbLeds);
@@ -1387,13 +1387,13 @@ int main(int argc,char *argv[]) {
     xPos = init_xpos;
     yPos = init_ypos;
 
-    ros::Rate loop_rate(rosRate);
+    //ros::Rate loop_rate(rosRate);
    
     while (ros::ok()) {
         updateSensorsAndActuators();
         updateRosInfo();
         ros::spinOnce();
-        loop_rate.sleep();    // Do not call "sleep" otherwise the bluetooth communication will hang.
+        //loop_rate.sleep();    // Do not call "sleep" otherwise the bluetooth communication will hang.
                                 // We communicate as fast as possible, this shouldn't be a problem...
     }
 
