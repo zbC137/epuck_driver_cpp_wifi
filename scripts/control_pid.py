@@ -20,6 +20,7 @@ if __name__ == '__main__':
         rospy.init_node('fouriCtrl', anonymous=True)
 
         pub = rospy.Publisher('vel', Twist, queue_size=10)
+        t_pub = rospy.Publisher('time', Float64MultiArray, queue_size=10)
         vel = Twist()
         rate = rospy.Rate(f)
 
@@ -71,8 +72,11 @@ if __name__ == '__main__':
                 vel.angular.z = uAngular
                 vel.linear.x = uLinear
                 #vel_msg = Float64MultiArray(data=vel)
+                t_msg = Float64MultiArray(data=[t])
+                rospy.loginfo(t_msg)
                 rospy.loginfo(vel)
                 pub.publish(vel)
+                t_pub.publish(t_msg)
 
                 rate.sleep()
 

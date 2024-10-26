@@ -7,6 +7,8 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
+SCALE = 0.00228571
+
 
 def curve(t, s):
     '''
@@ -19,29 +21,28 @@ def curve(t, s):
     x = (3*t+(0.5*t*np.sin(4*math.pi*s)+t*np.cos(10*math.pi*s)+150)*np.cos(2*math.pi*s)) + 400
     y = (0.5*t*np.sin(4*math.pi*s)+t*np.cos(10*math.pi*s)+150)*np.sin(2*math.pi*s) + 250
     '''
-    '''
+    
     if t < 30:
-        x = 200 * np.cos(2*math.pi*s) + 350
-        y = 200 * np.sin(2*math.pi*s) + 300
+        x = 150 * np.cos(2*math.pi*s) + 850
+        y = 150 * np.sin(2*math.pi*s) + 350
     elif t<60:
-        x = 200 * np.cos(2 * math.pi * s) + 500
-        y = 150 * np.sin(2 * math.pi * s) + 300
+        x = 175 * np.cos(2 * math.pi * s) + 650
+        y = 125 * np.sin(2 * math.pi * s) + 350
     else:
-        x = 100 + (150 * (1 - np.sin(2 * math.pi * s))) * np.cos(2 * math.pi * s) + 700
-        y = 100 + (150 * (1 - np.sin(2 * math.pi * s))) * np.sin(2 * math.pi * s) + 350
+        x = 100 + (125 * (1 - np.sin(2 * math.pi * s))) * np.cos(2 * math.pi * s) + 350
+        y = 100 + (125 * (1 - np.sin(2 * math.pi * s))) * np.sin(2 * math.pi * s) + 350
+
     '''
-
-
     # curve for paper
     x = (3 * t + (0.5*t * np.sin(4 * math.pi * s) + 200) * np.cos(2 * math.pi * s)) +300
     y = ((0.5*t * np.cos(4 * math.pi * s) + 200) * np.sin(2 * math.pi * s))+300
-
+    '''
     '''
     # elipse
     x = 200 * (1 + 0.01 * t) * np.cos(2 * math.pi * s) + 400 + 3 * t
     y = 100 * (1 + 0.01 * t) * np.sin(2 * math.pi * s) + 300
     '''
-    return x, y
+    return x * SCALE, y * SCALE
 
 
 def cLength(t):

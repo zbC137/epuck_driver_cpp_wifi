@@ -1378,8 +1378,8 @@ int main(int argc,char *argv[]) {
     * away the oldest ones.
     */
     //cmdVelSubscriber = n.subscribe("mobile_base/cmd_vel", 10, handlerVelocity);
-	cmdVelSubscriber = n.subscribe("vel", 10, handlerVelocity);
-	//cmdVelSubscriber = n.subscribe("cmd_vel", 10, handlerVelocityMulti);
+	//cmdVelSubscriber = n.subscribe("vel", 10, handlerVelocity);
+	cmdVelSubscriber = n.subscribe("cmd_vel", 10, handlerVelocityMulti);
     cmdLedSubscriber = n.subscribe("mobile_base/cmd_led", 10, handlerLED);
 	cmdRgbLedsSubscriber = n.subscribe("mobile_base/rgb_leds", 10, handlerRgbLeds);
     

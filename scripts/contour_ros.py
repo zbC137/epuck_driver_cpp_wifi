@@ -11,9 +11,10 @@ from std_msgs.msg import Float64MultiArray
 
 agentNum = 9
 harmNum = 6
-ctrlK = [1e-3, 3e-3]
+#ctrlK = [1e-3, 3e-3]
+ctrlK = [2/3, 2]
 k = 2
-dist = -0.01
+dist = 0.001
 f = 10
 
 MAX_SPEED = 1.5
@@ -32,7 +33,8 @@ if __name__ == '__main__':
     try:
         rospy.init_node('fouriCtrl', anonymous=True)
         pub = rospy.Publisher('vel', Float64MultiArray, queue_size=10)
-        vel = [0] * (2 * agentNum + 1)
+        t_pub = rospy.Publisher('time', Float64MultiArray, queue_size=10)
+        vel = [0] * 2 * agentNum
         ce = [0] * (4 * harmNum + 2)
         pe = [0] * (2 * agentNum)
         ori = [0] * agentNum
@@ -74,10 +76,12 @@ if __name__ == '__main__':
             xi_m[4 * harmNum] = xi[4 * harmNum, 0]
             xi_m[4 * harmNum + 1] = xi[4 * harmNum + 1, 0]
 
-            vel[-1] = t
+            t_msg = Float64MultiArray(data=[t])
             vel_msg = Float64MultiArray(data=vel)
+            rospy.loginfo(t_msg)
             rospy.loginfo(vel_msg)
             pub.publish(vel_msg)
+            t_pub.publish(t_msg)
             t1 = time.time() - start_time
             print("t: ", t1 - t)
 
