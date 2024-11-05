@@ -71,14 +71,14 @@ def detectTube(frameUndistorted, a):
     # Combine the masks
     mask = mask1 + mask2
 
-    cv2.imshow('mask', mask)
+    #cv2.imshow('mask', mask)
 
     # Detect the middle line of the tube
     ret, binary = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     binary[binary == 255] = 1
     skeleton0 = morphology.skeletonize(binary)
     skeleton = skeleton0.astype(np.uint8) * 255
-    cv2.imshow('skeleton', skeleton)
+    #cv2.imshow('skeleton', skeleton)
     contours, _ = cv2.findContours(skeleton, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
     # Draw the contours on the original frame and extract the point cloud of the tube
@@ -134,12 +134,12 @@ def detectTube(frameUndistorted, a):
     '''
     
     for i in range(len(a)//4):
-        point_cloud = np.append(point_cloud, [[a[4*i]/0.00228571, a[4*i+1]/0.00228571]], axis=0)
+        new_pc = np.append(new_pc, [[a[4*i]/0.00228571, a[4*i+1]/0.00228571]], axis=0)
         
-    point_cloud = sortPoints(point_cloud)
+    new_pc = sortPoints(new_pc)
         
-    gs = cf.generateDetectedGs(point_cloud, 8)
-    coff = cf.curveFitting(gs, point_cloud.reshape(2*len(point_cloud), 1), 8)
+    gs = cf.generateDetectedGs(new_pc, 8)
+    coff = cf.curveFitting(gs, new_pc.reshape(2*len(new_pc), 1), 8)
         
     gs_new = cf.generateGs(0, 0.001, 1, 0, 0, 8)
     pt_fitted = gs_new * coff
