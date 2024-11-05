@@ -58,6 +58,38 @@ def cLength(t):
     return lenList / length
 
 
+def detectedCurveLength(pc):
+    n = len(pc)
+    lenList = np.matlib.zeros((1, n))
+    
+    x, y = np.array(pc[:, 0]), np.array(pc[:, 1])
+    lenList[0, 1:] = [np.matlib.square(x[1:] - x[:-1]) + np.matlib.square(y[1:] - y[:-1])]
+    lenList = lenList.transpose()
+    lenList = np.matlib.sqrt(lenList)
+    length = sum(lenList)
+    
+    return lenList / length
+
+
+def generateDetectedGs(pc, harmNum):
+    n = len(pc)
+    lenlist = detectedCurveLength(pc)
+    
+    gs = np.matlib.zeros((2 * n, 4 * harmNum + 2))
+    s = 0
+    for i in range(n):
+        s += lenlist[i]
+        for j in range(harmNum):
+            gs[2 * i, 4 * j] = math.cos(2 * math.pi * (j + 1) * s)
+            gs[2 * i + 1, 4 * j + 2] = math.cos(2 * math.pi * (j + 1) * s)
+            gs[2 * i, 4 * j + 1] = math.sin(2 * math.pi * (j + 1) * s)
+            gs[2 * i + 1, 4 * j + 3] = math.sin(2 * math.pi * (j + 1) * s)
+        
+        gs[2 * i, 4 * harmNum], gs[2 * i + 1, 4 * harmNum + 1] = 1, 1
+    
+    return gs
+
+
 def generateX(values, agentNum):
     x = np.matlib.zeros((3 * agentNum, 1))
     for i in range(agentNum):
