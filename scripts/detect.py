@@ -192,10 +192,14 @@ if __name__ == '__main__':
     pose_pub = rospy.Publisher('robot_pose', Float64MultiArray, queue_size=10)
     t_sub = rospy.Subscriber('time', Float64MultiArray, callback)
     rate = rospy.Rate(100)
+    
     videoRgb = cv2.VideoCapture('/dev/video0')
     videoRgb.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     videoRgb.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     videoRgb.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    video = cv2.VideoWriter('video.avi', fourcc, 30.0, (1280, 720), True)
     
     image = cv2.imread('/home/binzhang/zbin13/codingsomethingcool/epuck_ws/src/epuck_driver_cpp_wifi/detect1.jpg')
 
@@ -270,7 +274,9 @@ if __name__ == '__main__':
                     poseArray.poses.append(pose)
                     print("pose of id", ids[i][0], ":\n", pose)
                     bot_pub.publish(poseArray)
-
+                    
+        video.write(frameUndistorted)
+        
         t2 = time.time()
         t = t2 - t1
         t1 = t2
