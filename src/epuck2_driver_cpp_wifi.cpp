@@ -27,6 +27,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/MagneticField.h>
 #include <sensor_msgs/BatteryState.h>
+//#include <boost.h>
 
 #define DEBUG_CONNECTION_INIT 1
 #define DEBUG_ROS_PARAMS 1
@@ -137,7 +138,7 @@ int speedLeft = 0, speedRight = 0;
 
 
 // General variables
-int robotId = 0;
+//int robotId = 0;
 std::string epuckname;
 
 
@@ -1154,8 +1155,10 @@ void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
     
 }
 
-void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr& msg) {
-    double u1 = msg->data[2*robotId-2] * 100;
+void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr msg, int& robotId) {
+    std::cout << "robot id: " << robotId << std::endl;
+	std::cout << "control: " << msg->data[0] << std::endl;
+	double u1 = msg->data[2*robotId-2] * 100;
 	double u2 = msg->data[2*robotId-1] * 100;
 
     // Kinematic model for differential robot.
@@ -1164,6 +1167,9 @@ void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr& msg) {
 
 	wl = saturated(wl, MAX_WHEEL_SPEED);
 	wr = saturated(wr, MAX_WHEEL_SPEED);
+	
+	wl = 1.0;
+	wr = 1.0;
 
     // At input 1000, angular velocity is 1 cycle / s or  2*pi/s.
     speedLeft = int(wl * 1000.0);
@@ -1222,6 +1228,7 @@ int main(int argc,char *argv[]) {
 	int rosRate = 10;
 	unsigned int bufIndex = 0;
 	int i = 0;
+	int robotId = 0;
    
 	command[0] = 0x80;
 	command[1] = 2;		// Sensors enabled.
@@ -1379,7 +1386,7 @@ int main(int argc,char *argv[]) {
     */
     //cmdVelSubscriber = n.subscribe("mobile_base/cmd_vel", 10, handlerVelocity);
 	//cmdVelSubscriber = n.subscribe("vel", 10, handlerVelocity);
-	cmdVelSubscriber = n.subscribe("cmd_vel", 10, handlerVelocityMulti);
+	cmdVelSubscriber = n.subscribe<std_msgs::Float64MultiArray>("vel", 10, [&](const std_msgs::Float64MultiArray::ConstPtr& msg) { handlerVelocityMulti(msg, robotId); });
     cmdLedSubscriber = n.subscribe("mobile_base/cmd_led", 10, handlerLED);
 	cmdRgbLedsSubscriber = n.subscribe("mobile_base/rgb_leds", 10, handlerRgbLeds);
     

@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 pe[2 * i] = posErr[2 * i, 0]
                 pe[2 * i + 1] = posErr[2 * i + 1, 0]
 
-                ori[i] = bot_state.x[2 * agentNum + i,0]
+                ori[i] = bot_state.botPose[3*i + 2]
 
             for i in range(harmNum):
                 ce[4 * i] = coffErr[4 * i, 0]
