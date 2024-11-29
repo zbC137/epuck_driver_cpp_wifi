@@ -1155,21 +1155,20 @@ void handlerVelocity(const geometry_msgs::Twist::ConstPtr& msg) {
     
 }
 
-void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr msg, int& robotId) {
-    std::cout << "robot id: " << robotId << std::endl;
-	std::cout << "control: " << msg->data[0] << std::endl;
-	double u1 = msg->data[2*robotId-2] * 100;
-	double u2 = msg->data[2*robotId-1] * 100;
+void handlerVelocityMulti(const std_msgs::Float64MultiArray::ConstPtr msg, int robotId) {
+	double u1 = msg->data[0] * 100;
+	double u2 = msg->data[1] * 100;
 
     // Kinematic model for differential robot.
-	double wl = (u1 - u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER;
+	double wl = (u1 - u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER; // WHEEL_DIAMETER = 4 cm
 	double wr = (u1 + u2 * WHEEL_SEPARATION / 2.0) * 2.0 / WHEEL_DIAMETER;
 
 	wl = saturated(wl, MAX_WHEEL_SPEED);
 	wr = saturated(wr, MAX_WHEEL_SPEED);
 	
-	wl = 1.0;
-	wr = 1.0;
+	//wl = 0.5 * (robotId + 1);
+	//wr = 0.5 * (robotId + 1);
+	std::cout << "ROBOT ID: " << robotId  << ", wl: " << wl << ", wr: " << wr << std::endl;
 
     // At input 1000, angular velocity is 1 cycle / s or  2*pi/s.
     speedLeft = int(wl * 1000.0);
@@ -1385,7 +1384,8 @@ int main(int argc,char *argv[]) {
     * away the oldest ones.
     */
     //cmdVelSubscriber = n.subscribe("mobile_base/cmd_vel", 10, handlerVelocity);
-	//cmdVelSubscriber = n.subscribe("vel", 10, handlerVelocity);
+	//cmdVelSubscriber = n.subscribe("vel", 10, handlerVelocityMulti);
+	std::cout << "robot " << robotId << " subscribed." << std::endl;
 	cmdVelSubscriber = n.subscribe<std_msgs::Float64MultiArray>("vel", 10, [&](const std_msgs::Float64MultiArray::ConstPtr& msg) { handlerVelocityMulti(msg, robotId); });
     cmdLedSubscriber = n.subscribe("mobile_base/cmd_led", 10, handlerLED);
 	cmdRgbLedsSubscriber = n.subscribe("mobile_base/rgb_leds", 10, handlerRgbLeds);

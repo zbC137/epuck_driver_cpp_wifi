@@ -20,7 +20,7 @@ from geometry_msgs.msg import PoseStamped, Pose, PoseArray
 from std_msgs.msg import Float64MultiArray, Header
 
 t = 0
-a = [0] * 9 * 4
+a = [0] * 8 * 4
 arucoDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
 parameters = aruco.DetectorParameters()
 rospy.init_node('detect', anonymous=True)
@@ -61,9 +61,9 @@ def detectTube(frameUndistorted, a):
     '''
         
     # Define the range for red color in HSV
-    lower_red1 = np.array([0, 50, 60])
+    lower_red1 = np.array([0, 65, 60])
     upper_red1 = np.array([10, 255, 255])
-    lower_red2 = np.array([170, 50, 60])
+    lower_red2 = np.array([170, 65, 60])
     upper_red2 = np.array([180, 255, 255])
 
     # Create masks for red color
@@ -103,7 +103,7 @@ def detectTube(frameUndistorted, a):
     pts = np.hstack((pts, np.zeros((pts.shape[0], 1), dtype=np.float32)))
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(pts)
-    downsampled_pcd = pcd.voxel_down_sample(voxel_size=20)
+    downsampled_pcd = pcd.voxel_down_sample(voxel_size=10)
     print("Downsampled point cloud: ", len(downsampled_pcd.points))
     print("Original point cloud: ", len(pcd.points))
     new_pc = np.asarray(downsampled_pcd.points)[0:, 0:2] #* 2

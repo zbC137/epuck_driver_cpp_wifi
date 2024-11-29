@@ -7,9 +7,10 @@ import matplotlib.pyplot as plt
 import csv
 
 from robot import Robot
+from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64MultiArray
 
-agentNum = 9
+agentNum = 8
 harmNum = 6
 #ctrlK = [1e-3, 3e-3]
 ctrlK = [2/3, 2]
@@ -32,8 +33,19 @@ def saturated(input, bound):
 if __name__ == '__main__':
     try:
         rospy.init_node('fouriCtrl', anonymous=True)
-        pub = rospy.Publisher('vel', Float64MultiArray, queue_size=10)
+        
         t_pub = rospy.Publisher('time', Float64MultiArray, queue_size=10)
+        
+        pub_1 = rospy.Publisher('epuck_robot_0/vel', Float64MultiArray, queue_size=10)
+        pub_2 = rospy.Publisher('epuck_robot_1/vel', Float64MultiArray, queue_size=10)
+        pub_3 = rospy.Publisher('epuck_robot_2/vel', Float64MultiArray, queue_size=10)
+        pub_4 = rospy.Publisher('epuck_robot_3/vel', Float64MultiArray, queue_size=10)
+        pub_5 = rospy.Publisher('epuck_robot_4/vel', Float64MultiArray, queue_size=10)
+        pub_6 = rospy.Publisher('epuck_robot_5/vel', Float64MultiArray, queue_size=10)
+        pub_7 = rospy.Publisher('epuck_robot_6/vel', Float64MultiArray, queue_size=10)
+        pub_8 = rospy.Publisher('epuck_robot_7/vel', Float64MultiArray, queue_size=10)
+        #pub_9 = rospy.Publisher('epuck_robot_8/vel', Float64MultiArray, queue_size=10)
+        
         vel = [0] * 2 * agentNum
         ce = [0] * (4 * harmNum + 2)
         pe = [0] * (2 * agentNum)
@@ -45,15 +57,25 @@ if __name__ == '__main__':
         l = cf.generateL(k, agentNum)
         gc = cf.generateGs(0, 1 / agentNum, 1, 0, 0, harmNum)
         start_time = time.time()
+        t1 = 0
 
         while not rospy.is_shutdown():
             t = time.time() - start_time
             u, coffErr, posErr, xi = cf.controller(t, bot_state.botPose, l, ctrlK, dist, gc, f, agentNum, harmNum)
-
+            u = np.zeros((2 * agentNum, 1))
+            if t > 75:
+                v_com = 0
+            elif t > 40:
+                v_com = -0.003
+            elif t > 35:
+                v_com = 0
+            else:
+                v_com = 0.003
+                
             for i in range(agentNum):
-                vel[2 * i] = u[2 * i, 0]
+                vel[2 * i] = u[2 * i, 0] + v_com
                 vel[2 * i + 1] = u[2 * i + 1, 0]
-
+                
                 pe[2 * i] = posErr[2 * i, 0]
                 pe[2 * i + 1] = posErr[2 * i + 1, 0]
 
@@ -77,11 +99,22 @@ if __name__ == '__main__':
             xi_m[4 * harmNum + 1] = xi[4 * harmNum + 1, 0]
 
             t_msg = Float64MultiArray(data=[t])
-            vel_msg = Float64MultiArray(data=vel)
             rospy.loginfo(t_msg)
-            rospy.loginfo(vel_msg)
-            pub.publish(vel_msg)
             t_pub.publish(t_msg)
+            
+            vel_msg = Float64MultiArray(data=vel)
+            rospy.loginfo(vel_msg)
+            
+            pub_1.publish(Float64MultiArray(data=vel[0:2]))
+            pub_2.publish(Float64MultiArray(data=vel[2:4]))
+            pub_3.publish(Float64MultiArray(data=vel[4:6]))
+            pub_4.publish(Float64MultiArray(data=vel[6:8]))
+            pub_5.publish(Float64MultiArray(data=vel[8:10]))
+            pub_6.publish(Float64MultiArray(data=vel[10:12]))
+            pub_7.publish(Float64MultiArray(data=vel[12:14]))
+            pub_8.publish(Float64MultiArray(data=vel[14:16]))
+            #pub_9.publish(Float64MultiArray(data=vel[16:18]))
+
             t1 = time.time() - start_time
             print("t: ", t1 - t)
 
